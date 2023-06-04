@@ -12,14 +12,14 @@ app.use(express.json())
 app.use(cors())
 
 //require routers
-// const moviesRouter = require("./movies/movies.router");
+const moviesRouter = require("./movies/movies.router");
 const reviewsRouter = require("./reviews/reviews.router");
-// const theatersRouter = require("./theaters/theaters.router");
+const theatersRouter = require("./theaters/theaters.router");
 
 //direct routes to required routers
-// app.use("/movies", moviesRouter);
+app.use("/movies", moviesRouter);
 app.use("/reviews", reviewsRouter);
-// app.use("/theaters", theatersRouter);
+app.use("/theaters", theatersRouter);
 
 //run errors checks
 app.use(notFound);

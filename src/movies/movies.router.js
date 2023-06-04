@@ -1,37 +1,21 @@
-//route 1
-// /movies
-//list all movies
+const router = require("express").Router();
+const controller = require("./movies.controller");
+const methodNotAllowed = require("../errors/methodNotAllowed");
 
-//route 2
-// /movies?is_showing=true
-//list all movies where is_showing=true
-//join against movies_theaters table
+//Import/require theater & reviews routers
+const theaterRouter = require("../theaters/theaters.router");
+const reviewsRouter = require("../reviews/reviews.router")
 
-//Routes 3-6
-//display specific movie based on ID
-// /movies/:movieId
+router.route("/")
+  .get(controller.list)
+  .all(methodNotAllowed);
 
-//If doesn't exist 404 error stating "Movie cannot be found"
-// /movies/:movieId (incorrect ID)
+router.route(`/:movieId`)
+  .get(controller.read)
+  .all(methodNotAllowed);
 
-//All theaters movie is playing in, will involve join with movies_theaters
-// /movies/:movieId/theaters
+//point to theaters&reviews routers for nested routes
+router.use("/:movieId/theaters", theaterRouter)
+router.use("/:movieId/reviews", reviewsRouter)
 
-//All reviews for specific movie, view specifics for return formatting in movies_read
-// /movies/:movieId/reviews
-
-const router = require("express").Router({ mergeParams: true })
-const controller = require("./movies.controller")
-const methodNotAllowed = require("../errors/methodNotAllowed")
-
-router
-    .route("/:reviewId")
-    .put(controller.update)
-    .delete(controller.delete)
-    .all(methodNotAllowed)
-
-router
-    .route("/")
-    .get(controller.read)
-
-module.exports = router
+module.exports = router;
