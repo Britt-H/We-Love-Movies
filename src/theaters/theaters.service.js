@@ -1,9 +1,9 @@
 const knex = require("../db/connection");
-const reduceP = require("../utils/reduce-properties");
+const reduce = require("../utils/reduce-properties");
 
-//creates array of movie objects with required properties
-//chain on to list function
-const reduceMovies = reduceP("theater_id", {
+//Movie Objects array with required props
+//Add on to list
+const reduceMovies = reduce("theater_id", {
   movie_id: ["movies", null, "movie_id"],
   title: ["movies", null, "title"],
   runtime_in_minutes: ["movies", null, "runtime_in_minutes"],

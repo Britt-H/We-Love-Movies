@@ -1,11 +1,9 @@
 const knex = require("../db/connection");
+const reduce = require("../utils/reduce-properties");
 
-//-------- use these for list function( path: /movies/:movieId/reviews)---------
-
-const reduceP = require("../utils/reduce-properties");
-
-//creates critic object with required properties
-const reduceCritics = reduceP("review_id", {
+//Critic Objects array with required props
+//Add on to list
+const reduceCritics = reduce("review_id", {
     critic_id: ["critic", null, "critic_id"],
     preferred_name: ["critic", null, "preferred_name"],
     surname: ["critic", null, "surname"],
@@ -13,8 +11,6 @@ const reduceCritics = reduceP("review_id", {
     created_at: ["critic", null, "created_at"],
     updated_at: ["critic", null, "updated_at"]
 });
-
-//----------------------------------------------------
 
 function read(reviewId) {
     return knex("reviews").select("*").where({ review_id: reviewId }).first();
@@ -36,8 +32,8 @@ function destroy(reviewId) {
 }
 
 function list(movieId){
-    return knex("reviews as r")
-        .join("critics as c", "c.critic_id", "r.critic_id")
+    return knex("reviews")
+        .join("critics", "critics.critic_id", "reviews.critic_id")
         .select("*").where({movie_id: movieId})
         .then(reduceCritics);
 }

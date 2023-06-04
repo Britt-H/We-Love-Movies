@@ -1,10 +1,10 @@
-const service = require("./reviews.service.js");
+const reviewService = require("./reviews.service.js");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 async function reviewExists(req, res, next) {
     const { reviewId } = req.params;
   
-    const review = await service.read(reviewId);
+    const review = await reviewService.read(reviewId);
     if (review) {
       res.locals.review = review;
       return next();
@@ -14,43 +14,41 @@ async function reviewExists(req, res, next) {
 
 async function read(req, res) {
     const {movieId} = req.params;
-    const data = await service.list(movieId);
+    //List reviews
+    const data = await reviewService.list(movieId);
 
-    //access first element/object of 'critic' properties array.
+    //Access first entry
     data.map((review, indx)=>{
         return review.critic = review.critic[0]
     });
 
+    //Return single entry
     res.json({ data });
 }
 
-async function update(req, res, next) {
+async function update(req, res) {
     const updatedReview = {
         ...res.locals.review,
         ...req.body.data,
         review_id: res.locals.review.review_id,
     };
     
-    //access critic & store data
     const criticId = updatedReview.critic_id;
-    const critic = await service.readCritic(criticId);
+    const critic = await reviewService.readCritic(criticId);
 
-    //update review
-    await service.update(updatedReview);
+    await reviewService.update(updatedReview);
 
-    //read updated review
-    const update = await service.read(res.locals.review.review_id);
+    const update = await reviewService.read(res.locals.review.review_id);
 
-    //set data to the updated review, inject critic data as critic property 
     const data = update;
     data.critic = critic;
 
     res.json({ data });
 }
 
-async function destroy(req, res, next) {
+async function destroy(req, res) {
     const { reviewId } = req.params
-    const data = await service.delete(reviewId);
+    await reviewService.delete(reviewId);
     res.sendStatus(204);
 }
 
